@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  alice:
+    build: .
+    environment:
+      - PEER_NAME=alice
+    networks:
+      - p2p-network
+    # command: ["/bin/sh", "-c", "tail -f /dev/null"]
+    command:
+      [
+        "/bin/sh",
+        "-c",
+        'echo "test" > alicefile.txt & echo ''{"Name":"alice","Contacts":[{"Name":"bob","Password":"pass","Messages":[]}]}'' > oldprofile.json & tail -f /dev/null',
+      ]
+
+  bob:
+    build: .
+    environment:
+      - PEER_NAME=bob
+    networks:
+      - p2p-network
+    command:
+      [
+        "/bin/sh",
+        "-c",
+        'echo "test" > bobfile.txt & echo ''{"Name":"bob","Contacts":[{"Name":"alice","Password":"pass","Messages":[]}]}'' > oldprofile.json & tail -f /dev/null',
+      ]
+
+networks:
+  p2p-network:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: 172.16.238.0/24
+        - subnet: 2001:db8:1::/64
